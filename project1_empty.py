@@ -187,8 +187,18 @@ class NeuralNetwork:
             return sum
     
     #Given a predicted output and ground truth output simply return the derivative of the loss (depending on the loss function)        
+    # this simply does it for one neuron
     def lossderiv(self,yp,y):
-        print('lossderiv')
+        
+        # MSE loss
+        if self.loss == 0:
+            # out - target
+            return yp - y
+        else:
+            # negative out / target + (1 - target) / (1 - out)
+            val = (-1 * y) / yp
+            val = val + ((1 - y) / (1 - yp))
+            return val
     
     #Given a single input and desired output preform one step of backpropagation (including a forward pass, getting the derivative of the loss, and then calling calcwdeltas for layers with the right values         
     def train(self,x,y):
