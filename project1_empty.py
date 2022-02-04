@@ -161,8 +161,30 @@ class NeuralNetwork:
     
         
     #Given a predicted output and ground truth output simply return the loss (depending on the loss function)
+    # making the assumption that both yp and y are vectors considering MSE we assume multiple output neurons
+    # and binary cross entropy we need multiple values to calculate the actual loss
     def calculateloss(self,yp,y):
-        print('calculate')
+
+        # MSE loss
+        if self.loss == 0:
+            sum = 0
+            for i in range(len(yp)):
+                val = y[i] - yp[i]
+                val = val ** 2
+                sum += val
+
+            sum = sum / len(yp)
+            return sum
+
+        # otherwise binary cross entropy
+        else:
+            sum = 0
+            for i in range(len(yp)):
+                val = -1 * (y[i] * np.log(yp[i]) + (1 - y[i]) * (np.log(1-yp[i])))
+                sum += val
+
+            sum = sum / len(yp)
+            return sum
     
     #Given a predicted output and ground truth output simply return the derivative of the loss (depending on the loss function)        
     def lossderiv(self,yp,y):
@@ -175,8 +197,11 @@ class NeuralNetwork:
 if __name__=="__main__":
     if (len(sys.argv)<2):
         print('a good place to test different parts of your code')
-        f = NeuralNetwork(2, np.array(([2, 2, 2])), 1, [1, 1, 1], 1, 0.1, np.array([[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]]))
+        f = NeuralNetwork(2, np.array(([2, 2, 2])), 2, [1, 1, 1], 1, 0.1, np.array([[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]]))
         f.calculate([0.05, 0.1])
+        #print(f.calculateloss([0.751365069, 0.77292846532], [0.01, 0.99]))
+        print(f.calculateloss([.2, .4, .9, .3, .8, .9], [0, 0, 0, 1, 1, 1]))
+
         
     elif (sys.argv[1]=='example'):
         print('run example from class (single step)')
