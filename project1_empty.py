@@ -33,7 +33,6 @@ class Neuron:
     #This method returns the activation of the net
     # linear = 0
     # log = 1
-    # also not sure why variable is named net, it's just the output
     def activate(self,net):
         # if linear, just return
         if self.activation == 0:
