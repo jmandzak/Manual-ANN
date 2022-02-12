@@ -48,6 +48,9 @@ class Neuron:
 
         # add in bias and do activation function
         sum += self.bias
+
+        # store the net
+        self.net = sum
         result = self.activate(sum)
 
         self.output = result
@@ -55,7 +58,10 @@ class Neuron:
 
     #This method returns the derivative of the activation function with respect to the net   
     def activationderivative(self):
-        print('activationderivative')   
+        if self.activation == 1:
+            return self.output * (1 - self.output)
+        else:
+            return 1  
     
     #This method calculates the partial derivative for each weight and returns the delta*w to be used in the previous layer
     def calcpartialderivative(self, wtimesdelta):
