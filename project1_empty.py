@@ -16,7 +16,7 @@ class Neuron:
     #initilize neuron with activation type, number of inputs, learning rate, and possibly with set weights
     def __init__(self,activation, input_num, lr, weights=None):
         self.activation = activation
-        self.num_inputs = input_num
+        self.num_inputs = input_num + 1 # to account for bias
         self.lr = lr
 
         # if weights is passed, use it. If not, just use random list of weights with len = num_inputs
@@ -24,11 +24,6 @@ class Neuron:
             self.weights = weights
         else:
             self.weights = [1 for x in range(input_num)]
-        
-        # bias is passed as last weight
-        # set bias then remove it from weights
-        self.bias = weights[-1]
-        self.weights = self.weights[:-1]
         
     #This method returns the activation of the net
     # linear = 0
@@ -43,14 +38,15 @@ class Neuron:
     #Calculate the output of the neuron should save the input and output for back-propagation.   
     def calculate(self,input):
         sum = 0
+        input.append(1) # to account for bias
+        self.input = input
         for i, w in zip(input, self.weights):
             sum += i * w
-
-        # add in bias and do activation function
-        sum += self.bias
-
+        
         # store the net
         self.net = sum
+
+        # do activation function
         result = self.activate(sum)
 
         self.output = result
@@ -65,10 +61,18 @@ class Neuron:
     
     #This method calculates the partial derivative for each weight and returns the delta*w to be used in the previous layer
     def calcpartialderivative(self, wtimesdelta):
-        print('calcpartialderivative') 
+        # multiply the wtimesdelta by the activation function
+        # FROM NOTES: Each neuron calculates its own delta by multiplying by the derivative of the activation function
+        self.delta = wtimesdelta * self.activationderivative()
+
+        # FROM NOTES: The neuron returns the vector of 𝑤𝛿to the FullyConnectedLayer
+        return self.delta * self.weights
     
     #Simply update the weights using the partial derivatives and the learning weight
     def updateweight(self):
+        # multiply the input by the delta, then update weight
+
+        self.weights = self.weights - (self.lr * self.delta * self.input)
         print('updateweight')
 
         
@@ -162,6 +166,7 @@ class NeuralNetwork:
         print(input)
         for i in range(self.num_layers):
             input = self.all_layers[i].calculate(input)
+            print(f'output of layer {i}: ', end='')
             print(input)
     
         
@@ -215,6 +220,7 @@ if __name__=="__main__":
         f = NeuralNetwork(2, np.array(([2, 2, 2])), 2, [1, 1, 1], 1, 0.1, np.array([[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]]))
         f.calculate([0.05, 0.1])
         #print(f.calculateloss([0.751365069, 0.77292846532], [0.01, 0.99]))
+        print('this is the loss for the first run: ', end='')
         print(f.calculateloss([.2, .4, .9, .3, .8, .9], [0, 0, 0, 1, 1, 1]))
 
         
