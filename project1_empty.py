@@ -142,8 +142,6 @@ class NeuralNetwork:
         else:
             self.weights = [None for i in range(self.num_layers)]
 
-        print(self.weights)
-
         # TODO - figure out how to make 3d numpy array of different dimensions
         
 
