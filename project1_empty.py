@@ -91,7 +91,7 @@ class FullyConnected:
         if type(weights) != type(None):
             self.weights = weights
         else:
-            self.weights = np.empty((self.num_neurons, self.num_inputs))
+            self.weights = [None for i in range(self.num_neurons)]
 
         # initialize all the neurons and add them to a list of neurons for the class to keep
         self.all_neurons = []
@@ -139,33 +139,13 @@ class NeuralNetwork:
         
         if type(weights) != type(None):
             self.weights = weights
+        else:
+            self.weights = [None for i in range(self.num_layers)]
+
+        print(self.weights)
 
         # TODO - figure out how to make 3d numpy array of different dimensions
-        """
-        # else:
-            # weights = []
-            # for i in range(self.num_layers):
-            #     middle = []
-            #     for j in range(self.num_neurons[i]):
-            #         w = []
-            #         if i == 0:
-            #             for k in range(self.num_inputs):
-            #                 w.append(0.5)
-            #         else:
-            #             for k in range(self.num_neurons[i-1]):
-            #                 w.append(0.5)
-            #         middle.append(np.array(w))
-            #     weights.append(np.array(middle))
-            # self.weights = np.array(weights)
-
-        # else:
-        #     self.weights = np.empty((self.num_inputs))
-        #     for i in range(self.num_layers):
-        #         if i == 0:
-        #             self.weights[i] = np.empty((self.num_neurons[i], self.num_inputs))
-        #         else:
-        #             self.weights[i] = np.empty((self.num_neurons[i], self.num_neurons[i-1]))
-        """
+        
 
         # create list of layers to hold on to
         self.all_layers = []
@@ -288,6 +268,12 @@ if __name__=="__main__":
             f.train([1, 0], [0])
             f.train([1, 1], [1])
             f.train([0, 1], [0])
+
+        print('\n\n\n\n')
+        print(f.calculate([0, 0]))
+        print(f.calculate([1, 0]))
+        print(f.calculate([1, 1]))
+        print(f.calculate([0, 1]))
         
     elif(sys.argv[1]=='xor'):
         print('learn xor')
@@ -297,6 +283,12 @@ if __name__=="__main__":
             f.train([1, 0], [1])
             f.train([1, 1], [0])
             f.train([0, 1], [1])
+
+        print('\n\n\n\n')
+        print(f.calculate([0, 0]))
+        print(f.calculate([1, 0]))
+        print(f.calculate([1, 1]))
+        print(f.calculate([0, 1]))
         
         # f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 1], 0, float(lr), np.array([[[0.5,0.5,0.5],[0.5, 0.5, 0.5]], [[0.5, 0.5, 0.5]]]))
         # for i in range(1000):
