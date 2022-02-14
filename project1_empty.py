@@ -74,7 +74,8 @@ class Neuron:
     #Simply update the weights using the partial derivatives and the learning weight
     def updateweight(self):
         # multiply the input by the delta, then update weight
-        print(str(self.lr) + " " + str(self.delta) + " " + str(self.input))
+        #print(str(self.lr) + " * " + str(self.delta) + " * " + str(self.input))
+        #print(self.weights)
         self.weights = self.weights - (self.lr * self.delta * np.asarray(self.input))
 
         
@@ -156,8 +157,8 @@ class NeuralNetwork:
     def calculate(self,input):
         for i in range(self.num_layers):
             input = self.all_layers[i].calculate(input)
-            print(f'output of layer {i}: ', end='')
-            print(input)
+            # print(f'output of layer {i}: ', end='')
+            # print(input)
             
         # return the output
         return input
@@ -197,6 +198,7 @@ class NeuralNetwork:
         if self.loss == 0:
             # out - target
             return yp - y
+        # Binary Cross Entropy
         else:
             # negative out / target + (1 - target) / (1 - out)
             val = (-1 * y) / yp
@@ -210,8 +212,8 @@ class NeuralNetwork:
         self.final_output = self.calculate(input)
 
         # print error
-        print(f'Error: {self.calculateloss(self.final_output, y)}')
-        print()
+        #print(f'Error: {self.calculateloss(self.final_output, y)}')
+        #print()
 
         # now get the last layer's delta
         wtimesdelta = []
@@ -223,22 +225,22 @@ class NeuralNetwork:
             wtimesdelta = layer.calcwdeltas(wtimesdelta)
 
         # print the new weights for testing
-        w = 1
-        b = 1
-        for layer in self.all_layers:
-            for neuron in layer.all_neurons:
-                for i in range(len(neuron.weights)):
-                    if i == len(neuron.weights)-1:
-                        print(f'b{b}: {neuron.weights[i]}')
-                        b += 1
-                    else:
-                        print(f'w{w}: {neuron.weights[i]}')
-                        w += 1
-                print()
+        # w = 1
+        # b = 1
+        # for layer in self.all_layers:
+        #     for neuron in layer.all_neurons:
+        #         for i in range(len(neuron.weights)):
+        #             if i == len(neuron.weights)-1:
+        #                 print(f'b{b}: {neuron.weights[i]}')
+        #                 b += 1
+        #             else:
+        #                 print(f'w{w}: {neuron.weights[i]}')
+        #                 w += 1
+        #         print()
 
         # do another forward run for testing purposes
-        self.final_output = self.calculate(input)
-        print(f'Error: {self.calculateloss(self.final_output, y)}')
+        #self.final_output = self.calculate(input)
+        #print(f'Error: {self.calculateloss(self.final_output, y)}')
 
 if __name__=="__main__":
     if (len(sys.argv)<2):
@@ -246,6 +248,9 @@ if __name__=="__main__":
         f = NeuralNetwork(2, np.array(([2, 2])), 2, [1, 1, 1], 0, 0.5, np.array([[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]]))
         for i in range(10000):
             f.train([0.05, 0.1], [0.01, 0.99])
+        
+        print('\n\n\n\n')
+        print(f.calculate([0.05, 0.1]))
 
     lr = sys.argv[2]
         
@@ -271,22 +276,23 @@ if __name__=="__main__":
         print(f.calculate([0, 1]))
         
     elif(sys.argv[1]=='xor'):
-        print('learn xor')
-        f = NeuralNetwork(1, np.array([1]), 2, [1], 0, float(lr), np.array([[[0.5,0.5,0.5]]]))
-        for i in range(1000):
-            f.train([0, 0], [0])
-            f.train([1, 0], [1])
-            f.train([1, 1], [0])
-            f.train([0, 1], [1])
+        # print('learn xor')
+        # f = NeuralNetwork(1, np.array([1]), 2, [1], 0, float(lr), np.array([[[0.5,0.5,0.5]]]))
+        # for i in range(1000):
+        #     f.train([0, 0], [0])
+        #     f.train([1, 0], [1])
+        #     f.train([1, 1], [0])
+        #     f.train([0, 1], [1])
 
-        print('\n\n\n\n')
-        print(f.calculate([0, 0]))
-        print(f.calculate([1, 0]))
-        print(f.calculate([1, 1]))
-        print(f.calculate([0, 1]))
+        # print('\n\n\n\n')
+        # print(f.calculate([0, 0]))
+        # print(f.calculate([1, 0]))
+        # print(f.calculate([1, 1]))
+        # print(f.calculate([0, 1]))
         
-        f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 1], 0, float(lr), np.array([[[0.5,0.5,0.5],[0.5, 0.5, 0.5]], [[0.5, 0.5, 0.5]]]))
-        for i in range(1000):
+        f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 0], 0, float(lr), np.array([[[4, 4, -2],[-3, -3, 5]], [[5, 5, -5]]]))
+        #f = NeuralNetwork(2, np.array([4, 1]), 2, [1, 1], 0, float(lr), np.array([[[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5]], [[0.5, 0.5, 0.5, 0.5, 0.5]]]))
+        for i in range(10000):
             f.train([0, 0], [0])
             f.train([1, 0], [1])
             f.train([1, 1], [0])
@@ -297,3 +303,15 @@ if __name__=="__main__":
         print(f.calculate([1, 0]))
         print(f.calculate([1, 1]))
         print(f.calculate([0, 1]))
+
+# for reference
+
+"""
+For this entire file there are a few constants:
+activation:
+0 - linear
+1 - logistic (only one supported)
+loss:
+0 - sum of square errors
+1 - binary cross entropy
+"""
