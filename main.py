@@ -25,7 +25,7 @@ class Neuron:
         if type(weights) != type(None):
             self.weights = weights
         else:
-            self.weights = [1 for x in range(self.num_inputs)]
+            self.weights = [x for x in np.random.randn(self.num_inputs)]
         
     #This method returns the activation of the net
     # linear = 0
@@ -121,7 +121,7 @@ class FullyConnected:
             
         # sum them and return them
         array = np.array(all_wtimesdelta)
-        array.sum(axis=0)
+        array = array.sum(axis=0)
         return array
            
         
@@ -249,6 +249,7 @@ if __name__=="__main__":
         print(f'Next Error:       {f.calculateloss(next_prediction, [0.01, 0.99])}')
 
         # print the new weights
+        print('\n\nNEW WEIGHTS AFTER 1 TRAINING STEP')
         w = 1
         b = 1
         for layer in f.all_layers:
@@ -265,10 +266,11 @@ if __name__=="__main__":
     elif(sys.argv[2]=='and'):
         print('learn and')
         # initialize the network
-        f = NeuralNetwork(1, np.array([1]), 2, [1], 1, float(lr), np.array([[[0.5,0.5,0.5]]]))
+        f = NeuralNetwork(1, np.array([1]), 2, [1], 1, float(lr))
 
+        print('\n\nAND MODEL USING SIGMOID ACTIVATION AND BINARY CROSS ENTROPY')
         # train for 1000 epochs
-        for i in range(1000):
+        for i in range(10000):
             f.train([0, 0], [0])
             f.train([1, 0], [0])
             f.train([1, 1], [1])
@@ -291,12 +293,38 @@ if __name__=="__main__":
         print(f'Prediction for [1,0]: {int(o3>=0.5)}')
         print(f'Prediction for [1,1]: {int(o4>=0.5)}')
 
+        print('\n\nAND MODEL USING LINEAR ACTIVATION AND MSE')
+        # initialize the network
+        f = NeuralNetwork(1, np.array([1]), 2, [0], 0, float(lr))
 
+        # train for 1000 epochs
+        for i in range(10000):
+            f.train([0, 0], [0])
+            f.train([1, 0], [0])
+            f.train([1, 1], [1])
+            f.train([0, 1], [0])
+
+        # print the results
+        o1 = f.calculate([0, 0])[0]
+        o2 = f.calculate([0, 1])[0]
+        o3 = f.calculate([1, 0])[0]
+        o4 = f.calculate([1, 1])[0]
+        print(f'\nWITHOUT STEP FUNCTION')
+        print(f'Prediction for [0,0]: {o1}')
+        print(f'Prediction for [0,1]: {o2}')
+        print(f'Prediction for [1,0]: {o3}')
+        print(f'Prediction for [1,1]: {o4}')
+
+        print(f'\nWITH STEP FUNCTION OF >=0.5 = 1, <0.5 = 0')
+        print(f'Prediction for [0,0]: {int(o1>=0.5)}')
+        print(f'Prediction for [0,1]: {int(o2>=0.5)}')
+        print(f'Prediction for [1,0]: {int(o3>=0.5)}')
+        print(f'Prediction for [1,1]: {int(o4>=0.5)}')
 
         # graphing code
-        # learning_rates = [0.001, 0.01, 0.1, 1, 10, 100]
+        # learning_rates = [0.001, 0.01, 0.1, 1]
         # for eta in learning_rates:
-        #     f = NeuralNetwork(1, np.array([1]), 2, [1], 1, eta, np.array([[[0.5,0.5,0.5]]]))
+        #     f = NeuralNetwork(1, np.array([1]), 2, [0], 0, eta, np.array([[[0.5,0.5,0.5]]]))
         #     for i in range(1000):
         #         f.train([0, 0], [0])
         #         f.train([1, 0], [0])
@@ -312,8 +340,8 @@ if __name__=="__main__":
 
         #     temp_losses = []
         #     epoch = []
-        #     for i in range(100):
-        #         if i % 1 == 0:
+        #     for i in range(4000):
+        #         if i % 100 == 0:
         #             temp_losses.append(f.losses[i])
         #             epoch.append(i)
             
@@ -332,10 +360,10 @@ if __name__=="__main__":
         # print(f.calculate([0, 1]))
         
     elif(sys.argv[2]=='xor'):
-        # print('learn xor')
+        print('learn xor')
         print('XOR as a perceptron\n')
-        f = NeuralNetwork(1, np.array([1]), 2, [1], 0, float(lr), np.array([[[0.1, 0.2, 0.3]]]))
-        for i in range(1000):
+        f = NeuralNetwork(1, np.array([1]), 2, [1], 1, float(lr))
+        for i in range(10000):
             f.train([0, 0], [0])
             f.train([1, 0], [1])
             f.train([1, 1], [0])
@@ -395,9 +423,10 @@ if __name__=="__main__":
         # print(f.calculate([0, 1]))
         
         print('\n\nXOR with a single hidden layer')
-        print('NOTE: Please do not use a learning rate higher than 0.5 if you wish to see it converge correctly')
-        f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 0], 0, float(lr), np.array([[[4, 4, -2],[-3, -3, 5]], [[5, 5, -5]]], dtype=object))
-        for i in range(1000):
+        print('NOTE: Please use a learning rate between 0.1 and 1 for best results')
+        print('      sometimes, local minima may cause model to get stuck. Please retry with weight between 0.1 and 1')
+        f = NeuralNetwork(2, np.array([8, 1]), 2, [1, 1], 1, float(lr))
+        for i in range(10000):
             f.train([0, 0], [0])
             f.train([1, 0], [1])
             f.train([1, 1], [0])
@@ -423,8 +452,8 @@ if __name__=="__main__":
         # graphing code
         # learning_rates = [0.001, 0.01, 0.1, 1]
         # for eta in learning_rates:
-        #     f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 0], 0, eta, np.array([[[4, 4, -2],[-3, -3, 5]], [[5, 5, -5]]]))
-        #     for i in range(10000):
+        #     f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 1], 1, eta)
+        #     for i in range(1000):
         #         f.train([0, 0], [0])
         #         f.train([1, 0], [1])
         #         f.train([1, 1], [0])
@@ -438,8 +467,8 @@ if __name__=="__main__":
             
         #     temp_losses = []
         #     epoch = []
-        #     for i in range(40000):
-        #         if i % 100 == 0:
+        #     for i in range(4000):
+        #         if i % 50 == 0:
         #             temp_losses.append(f.losses[i])
         #             epoch.append(i)
             
@@ -455,15 +484,3 @@ if __name__=="__main__":
         # print(f.calculate([1, 0]))
         # print(f.calculate([1, 1]))
         # print(f.calculate([0, 1]))
-
-# for reference
-
-"""
-For this entire file there are a few constants:
-activation:
-0 - linear
-1 - logistic (only one supported)
-loss:
-0 - sum of square errors
-1 - binary cross entropy
-"""
