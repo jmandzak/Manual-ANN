@@ -1,4 +1,5 @@
-from matplotlib.pyplot import pause
+# for graphing purposes only use matplotlib
+#import matplotlib.pyplot as plt
 import numpy as np
 import sys
 """
@@ -74,8 +75,6 @@ class Neuron:
     #Simply update the weights using the partial derivatives and the learning weight
     def updateweight(self):
         # multiply the input by the delta, then update weight
-        #print(str(self.lr) + " * " + str(self.delta) + " * " + str(self.input))
-        #print(self.weights)
         self.weights = self.weights - (self.lr * self.delta * np.asarray(self.input))
 
         
@@ -137,6 +136,8 @@ class NeuralNetwork:
         self.loss = loss
         self.lr = lr
 
+        # for graphing purposes
+        self.losses = []
         
         if type(weights) != type(None):
             self.weights = weights
@@ -157,8 +158,6 @@ class NeuralNetwork:
     def calculate(self,input):
         for i in range(self.num_layers):
             input = self.all_layers[i].calculate(input)
-            # print(f'output of layer {i}: ', end='')
-            # print(input)
             
         # return the output
         return input
@@ -211,9 +210,8 @@ class NeuralNetwork:
         input = x
         self.final_output = self.calculate(input)
 
-        # print error
-        #print(f'Error: {self.calculateloss(self.final_output, y)}')
-        #print()
+        # save the loss
+        self.losses.append(self.calculateloss(self.final_output, y))
 
         # now get the last layer's delta
         wtimesdelta = []
@@ -224,85 +222,239 @@ class NeuralNetwork:
         for layer in reversed(self.all_layers):
             wtimesdelta = layer.calcwdeltas(wtimesdelta)
 
-        # print the new weights for testing
-        # w = 1
-        # b = 1
-        # for layer in self.all_layers:
-        #     for neuron in layer.all_neurons:
-        #         for i in range(len(neuron.weights)):
-        #             if i == len(neuron.weights)-1:
-        #                 print(f'b{b}: {neuron.weights[i]}')
-        #                 b += 1
-        #             else:
-        #                 print(f'w{w}: {neuron.weights[i]}')
-        #                 w += 1
-        #         print()
-
-        # do another forward run for testing purposes
-        #self.final_output = self.calculate(input)
-        #print(f'Error: {self.calculateloss(self.final_output, y)}')
-
 if __name__=="__main__":
-    if (len(sys.argv)<2):
-        print('a good place to test different parts of your code')
-        f = NeuralNetwork(2, np.array(([2, 2])), 2, [1, 1, 1], 0, 0.5, np.array([[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]]))
-        for i in range(10000):
-            f.train([0.05, 0.1], [0.01, 0.99])
-        
-        print('\n\n\n\n')
-        print(f.calculate([0.05, 0.1]))
+    if (len(sys.argv)<3):
+        print('Usage: python main.py [learning_rate (type:float)] ["example" / "and" / "xor"]')
+        exit()
 
-    lr = sys.argv[2]
+    lr = sys.argv[1]
         
-    if (sys.argv[1]=='example'):
-        print('run example from class (single step)')
-        w=np.array([[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]])
-        x=np.array([0.05,0.1])
-        np.array([0.01,0.99])
+    if (sys.argv[2]=='example'):
+        print('example from class (single step)')
+
+        # initialize the network
+        f = NeuralNetwork(2, np.array(([2, 2])), 2, [1, 1, 1], 0, 0.5, np.array([[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]]))
         
-    elif(sys.argv[1]=='and'):
+        # make the initial prediction and get error
+        initial_prediction = f.calculate([0.05,0.1])
+        print(f'\nInitial Prediction: {initial_prediction}')
+        print(f'Initial Error:      {f.calculateloss(initial_prediction, [0.01, 0.99])}')
+        
+        # train it for a single step
+        f.train([0.05, 0.1], [0.01, 0.99])
+        
+        # predict again after training
+        next_prediction = f.calculate([0.05,0.1])
+        print(f'\nNext Prediction:  {next_prediction}')
+        print(f'Next Error:       {f.calculateloss(next_prediction, [0.01, 0.99])}')
+
+        # print the new weights
+        w = 1
+        b = 1
+        for layer in f.all_layers:
+            for neuron in layer.all_neurons:
+                for i in range(len(neuron.weights)):
+                    if i == len(neuron.weights)-1:
+                        print(f'b{b}: {neuron.weights[i]}')
+                        b += 1
+                    else:
+                        print(f'w{w}: {neuron.weights[i]}')
+                        w += 1
+                print()
+        
+    elif(sys.argv[2]=='and'):
         print('learn and')
-        f = NeuralNetwork(1, np.array([1]), 2, [1], 0, float(lr), np.array([[[0.5,0.5,0.5]]]))
+        # initialize the network
+        f = NeuralNetwork(1, np.array([1]), 2, [1], 1, float(lr), np.array([[[0.5,0.5,0.5]]]))
+
+        # train for 1000 epochs
         for i in range(1000):
             f.train([0, 0], [0])
             f.train([1, 0], [0])
             f.train([1, 1], [1])
             f.train([0, 1], [0])
 
-        print('\n\n\n\n')
-        print(f.calculate([0, 0]))
-        print(f.calculate([1, 0]))
-        print(f.calculate([1, 1]))
-        print(f.calculate([0, 1]))
-        
-    elif(sys.argv[1]=='xor'):
-        # print('learn xor')
-        # f = NeuralNetwork(1, np.array([1]), 2, [1], 0, float(lr), np.array([[[0.5,0.5,0.5]]]))
-        # for i in range(1000):
-        #     f.train([0, 0], [0])
-        #     f.train([1, 0], [1])
-        #     f.train([1, 1], [0])
-        #     f.train([0, 1], [1])
+        # print the results
+        o1 = f.calculate([0, 0])[0]
+        o2 = f.calculate([0, 1])[0]
+        o3 = f.calculate([1, 0])[0]
+        o4 = f.calculate([1, 1])[0]
+        print(f'\nWITHOUT STEP FUNCTION')
+        print(f'Prediction for [0,0]: {o1}')
+        print(f'Prediction for [0,1]: {o2}')
+        print(f'Prediction for [1,0]: {o3}')
+        print(f'Prediction for [1,1]: {o4}')
 
+        print(f'\nWITH STEP FUNCTION OF >=0.5 = 1, <0.5 = 0')
+        print(f'Prediction for [0,0]: {int(o1>=0.5)}')
+        print(f'Prediction for [0,1]: {int(o2>=0.5)}')
+        print(f'Prediction for [1,0]: {int(o3>=0.5)}')
+        print(f'Prediction for [1,1]: {int(o4>=0.5)}')
+
+
+
+        # graphing code
+        # learning_rates = [0.001, 0.01, 0.1, 1, 10, 100]
+        # for eta in learning_rates:
+        #     f = NeuralNetwork(1, np.array([1]), 2, [1], 1, eta, np.array([[[0.5,0.5,0.5]]]))
+        #     for i in range(1000):
+        #         f.train([0, 0], [0])
+        #         f.train([1, 0], [0])
+        #         f.train([1, 1], [1])
+        #         f.train([0, 1], [0])
+
+            
+        #     print(f'\n\n\n\nETA = {eta}')
+        #     print(f.calculate([0, 0]))
+        #     print(f.calculate([1, 0]))
+        #     print(f.calculate([1, 1]))
+        #     print(f.calculate([0, 1]))
+
+        #     temp_losses = []
+        #     epoch = []
+        #     for i in range(100):
+        #         if i % 1 == 0:
+        #             temp_losses.append(f.losses[i])
+        #             epoch.append(i)
+            
+        #     plt.plot(epoch, temp_losses, label=f'lr: {eta}')
+        #     #plt.plot(f.losses, label=f'lr: {eta}')
+            
+        # leg = plt.legend()
+        # plt.title('Loss Through Epochs')
+        # plt.ylabel('Loss')
+        # plt.xlabel('Epochs')
+        # plt.savefig('test.png')
         # print('\n\n\n\n')
         # print(f.calculate([0, 0]))
         # print(f.calculate([1, 0]))
         # print(f.calculate([1, 1]))
         # print(f.calculate([0, 1]))
         
-        f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 0], 0, float(lr), np.array([[[4, 4, -2],[-3, -3, 5]], [[5, 5, -5]]]))
-        #f = NeuralNetwork(2, np.array([4, 1]), 2, [1, 1], 0, float(lr), np.array([[[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5]], [[0.5, 0.5, 0.5, 0.5, 0.5]]]))
-        for i in range(10000):
+    elif(sys.argv[2]=='xor'):
+        # print('learn xor')
+        print('XOR as a perceptron\n')
+        f = NeuralNetwork(1, np.array([1]), 2, [1], 0, float(lr), np.array([[[0.1, 0.2, 0.3]]]))
+        for i in range(1000):
             f.train([0, 0], [0])
             f.train([1, 0], [1])
             f.train([1, 1], [0])
             f.train([0, 1], [1])
 
-        print('\n\n\n\n')
-        print(f.calculate([0, 0]))
-        print(f.calculate([1, 0]))
-        print(f.calculate([1, 1]))
-        print(f.calculate([0, 1]))
+        # print the results
+        o1 = f.calculate([0, 0])[0]
+        o2 = f.calculate([0, 1])[0]
+        o3 = f.calculate([1, 0])[0]
+        o4 = f.calculate([1, 1])[0]
+        print(f'WITHOUT STEP FUNCTION')
+        print(f'Prediction for [0,0]: {o1}')
+        print(f'Prediction for [0,1]: {o2}')
+        print(f'Prediction for [1,0]: {o3}')
+        print(f'Prediction for [1,1]: {o4}')
+
+        print(f'\nWITH STEP FUNCTION OF >=0.5 = 1, <0.5 = 0')
+        print(f'Prediction for [0,0]: {int(o1>=0.5)}')
+        print(f'Prediction for [0,1]: {int(o2>=0.5)}')
+        print(f'Prediction for [1,0]: {int(o3>=0.5)}')
+        print(f'Prediction for [1,1]: {int(o4>=0.5)}')
+
+        # graphing code
+        # learning_rates = [0.001, 0.01, 0.1, 1, 10]
+        # for eta in learning_rates:
+        #     f = NeuralNetwork(1, np.array([1]), 2, [1], 1, eta, np.array([[[0.1, 0.2, 0.3]]]))
+        #     for i in range(25):
+        #         f.train([0, 0], [0])
+        #         f.train([1, 0], [1])
+        #         f.train([1, 1], [0])
+        #         f.train([0, 1], [1])
+
+        #     print(f'\n\n\n\nETA = {eta}')
+        #     print(f.calculate([0, 0]))
+        #     print(f.calculate([1, 0]))
+        #     print(f.calculate([1, 1]))
+        #     print(f.calculate([0, 1]))
+            
+        #     temp_losses = []
+        #     epoch = []
+        #     for i in range(100):
+        #         if i % 1 == 0:
+        #             temp_losses.append(f.losses[i])
+        #             epoch.append(i)
+            
+        #     plt.plot(epoch, temp_losses, label=f'lr: {eta}')
+
+        # leg = plt.legend(loc='upper right')
+        # plt.title('Loss Through Epochs')
+        # plt.ylabel('Loss')
+        # plt.xlabel('Epochs')
+        # plt.savefig('test.png')
+        # print('\n\n\n\n')
+        # print(f.calculate([0, 0]))
+        # print(f.calculate([1, 0]))
+        # print(f.calculate([1, 1]))
+        # print(f.calculate([0, 1]))
+        
+        print('\n\nXOR with a single hidden layer')
+        print('NOTE: Please do not use a learning rate higher than 0.5 if you wish to see it converge correctly')
+        f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 0], 0, float(lr), np.array([[[4, 4, -2],[-3, -3, 5]], [[5, 5, -5]]], dtype=object))
+        for i in range(1000):
+            f.train([0, 0], [0])
+            f.train([1, 0], [1])
+            f.train([1, 1], [0])
+            f.train([0, 1], [1])
+
+        # print the results
+        o1 = f.calculate([0, 0])[0]
+        o2 = f.calculate([0, 1])[0]
+        o3 = f.calculate([1, 0])[0]
+        o4 = f.calculate([1, 1])[0]
+        print(f'\nWITHOUT STEP FUNCTION')
+        print(f'Prediction for [0,0]: {o1}')
+        print(f'Prediction for [0,1]: {o2}')
+        print(f'Prediction for [1,0]: {o3}')
+        print(f'Prediction for [1,1]: {o4}')
+
+        print(f'\nWITH STEP FUNCTION OF >=0.5 = 1, <0.5 = 0')
+        print(f'Prediction for [0,0]: {int(o1>=0.5)}')
+        print(f'Prediction for [0,1]: {int(o2>=0.5)}')
+        print(f'Prediction for [1,0]: {int(o3>=0.5)}')
+        print(f'Prediction for [1,1]: {int(o4>=0.5)}')
+
+        # graphing code
+        # learning_rates = [0.001, 0.01, 0.1, 1]
+        # for eta in learning_rates:
+        #     f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 0], 0, eta, np.array([[[4, 4, -2],[-3, -3, 5]], [[5, 5, -5]]]))
+        #     for i in range(10000):
+        #         f.train([0, 0], [0])
+        #         f.train([1, 0], [1])
+        #         f.train([1, 1], [0])
+        #         f.train([0, 1], [1])
+
+        #     print(f'\n\n\n\nETA = {eta}')
+        #     print(f.calculate([0, 0]))
+        #     print(f.calculate([1, 0]))
+        #     print(f.calculate([1, 1]))
+        #     print(f.calculate([0, 1]))
+            
+        #     temp_losses = []
+        #     epoch = []
+        #     for i in range(40000):
+        #         if i % 100 == 0:
+        #             temp_losses.append(f.losses[i])
+        #             epoch.append(i)
+            
+        #     plt.plot(epoch, temp_losses, label=f'lr: {eta}')
+
+        # leg = plt.legend()
+        # plt.title('Loss Through Epochs')
+        # plt.ylabel('Loss')
+        # plt.xlabel('Epochs')
+        # plt.savefig('test.png')
+        # print('\n\n\n\n')
+        # print(f.calculate([0, 0]))
+        # print(f.calculate([1, 0]))
+        # print(f.calculate([1, 1]))
+        # print(f.calculate([0, 1]))
 
 # for reference
 
