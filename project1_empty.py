@@ -270,8 +270,9 @@ if __name__=="__main__":
         for i in range(10000):
             f.train([0.05, 0.1], [0.01, 0.99])
 
+    lr = sys.arg[2]
         
-    elif (sys.argv[1]=='example'):
+    if (sys.argv[1]=='example'):
         print('run example from class (single step)')
         w=np.array([[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]])
         x=np.array([0.05,0.1])
@@ -279,6 +280,9 @@ if __name__=="__main__":
         
     elif(sys.argv[1]=='and'):
         print('learn and')
+        f = NeuralNetwork(0, np.array(([0])), 4, [1, 1, 1], 0, 0.5)
+        for i in range(10000):
+            f.train([0, 1, 2, 3], [1, 0])
         
     elif(sys.argv[1]=='xor'):
         print('learn xor')
