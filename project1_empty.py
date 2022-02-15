@@ -1,3 +1,4 @@
+from matplotlib.pyplot import pause
 import numpy as np
 import sys
 """
@@ -68,7 +69,7 @@ class Neuron:
         self.delta = wtimesdelta_array * self.activationderivative()
 
         # FROM NOTES: The neuron returns the vector of 𝑤𝛿to the FullyConnectedLayer
-        return self.delta * self.weights
+        return self.delta * np.asarray(self.weights)
     
     #Simply update the weights using the partial derivatives and the learning weight
     def updateweight(self):
@@ -281,11 +282,25 @@ if __name__=="__main__":
         
     elif(sys.argv[1]=='and'):
         print('learn and')
-        f = NeuralNetwork(1, np.array([1]), 2, [1, 1], 0, float(lr), np.array([[[0.5,0.5,0.5],[0.5,0.5,0.5]]]))
-        f.train([0, 0], [1])
-        f.train([1, 0], [0])
-        f.train([1, 1], [1])
-        f.train([0, 1], [0])
+        f = NeuralNetwork(1, np.array([1]), 2, [1], 0, float(lr), np.array([[[0.5,0.5,0.5]]]))
+        for i in range(1000):
+            f.train([0, 0], [0])
+            f.train([1, 0], [0])
+            f.train([1, 1], [1])
+            f.train([0, 1], [0])
         
     elif(sys.argv[1]=='xor'):
         print('learn xor')
+        f = NeuralNetwork(1, np.array([1]), 2, [1], 0, float(lr), np.array([[[0.5,0.5,0.5]]]))
+        for i in range(1000):
+            f.train([0, 0], [0])
+            f.train([1, 0], [1])
+            f.train([1, 1], [0])
+            f.train([0, 1], [1])
+        
+        # f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 1], 0, float(lr), np.array([[[0.5,0.5,0.5],[0.5, 0.5, 0.5]], [[0.5, 0.5, 0.5]]]))
+        # for i in range(1000):
+        #     f.train([0, 0], [0])
+        #     f.train([1, 0], [1])
+        #     f.train([1, 1], [0])
+        #     f.train([0, 1], [1])
