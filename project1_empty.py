@@ -73,7 +73,8 @@ class Neuron:
     #Simply update the weights using the partial derivatives and the learning weight
     def updateweight(self):
         # multiply the input by the delta, then update weight
-        self.weights = self.weights - (self.lr * self.delta * self.input)
+        print(str(self.lr) + " " + str(self.delta) + " " + str(self.input))
+        self.weights = self.weights - (self.lr * self.delta * np.asarray(self.input))
 
         
 #A fully connected layer        
@@ -270,7 +271,7 @@ if __name__=="__main__":
         for i in range(10000):
             f.train([0.05, 0.1], [0.01, 0.99])
 
-    lr = sys.arg[2]
+    lr = sys.argv[2]
         
     if (sys.argv[1]=='example'):
         print('run example from class (single step)')
@@ -280,9 +281,11 @@ if __name__=="__main__":
         
     elif(sys.argv[1]=='and'):
         print('learn and')
-        f = NeuralNetwork(0, np.array(([0])), 4, [1, 1, 1], 0, 0.5)
-        for i in range(10000):
-            f.train([0, 1, 2, 3], [1, 0])
+        f = NeuralNetwork(1, np.array([1]), 2, [1, 1], 0, float(lr), np.array([[[0.5,0.5,0.5],[0.5,0.5,0.5]]]))
+        f.train([0, 0], [1])
+        f.train([1, 0], [0])
+        f.train([1, 1], [1])
+        f.train([0, 1], [0])
         
     elif(sys.argv[1]=='xor'):
         print('learn xor')
