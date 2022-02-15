@@ -285,9 +285,15 @@ if __name__=="__main__":
         print(f.calculate([1, 1]))
         print(f.calculate([0, 1]))
         
-        # f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 1], 0, float(lr), np.array([[[0.5,0.5,0.5],[0.5, 0.5, 0.5]], [[0.5, 0.5, 0.5]]]))
-        # for i in range(1000):
-        #     f.train([0, 0], [0])
-        #     f.train([1, 0], [1])
-        #     f.train([1, 1], [0])
-        #     f.train([0, 1], [1])
+        f = NeuralNetwork(2, np.array([2, 1]), 2, [1, 1], 0, float(lr), np.array([[[0.5,0.5,0.5],[0.5, 0.5, 0.5]], [[0.5, 0.5, 0.5]]]))
+        for i in range(1000):
+            f.train([0, 0], [0])
+            f.train([1, 0], [1])
+            f.train([1, 1], [0])
+            f.train([0, 1], [1])
+
+        print('\n\n\n\n')
+        print(f.calculate([0, 0]))
+        print(f.calculate([1, 0]))
+        print(f.calculate([1, 1]))
+        print(f.calculate([0, 1]))
