@@ -1,4 +1,4 @@
-# cs525proj1
+# Manual-ANN
 This project implements an extremely basic feedforward neural network
 
 
